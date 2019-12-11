@@ -18,10 +18,34 @@ namespace MicroserviceFdrv.Controllers
                 SqlCommand command = new SqlCommand("SELECT id FROM users WHERE username = @username AND passwd = @password", connection);
                 command.Parameters.AddWithValue("@username", username);
                 command.Parameters.AddWithValue("@password", passwd);
-                try { int id = (int)command.ExecuteScalar(); }
+                try
+                {
+                    int id = (int)command.ExecuteScalar();
+                    command.CommandText = "INSERT sessionlog VALUES (@id, @now, 1)";
+                    command.Parameters.AddWithValue("@id", id);
+                    command.Parameters.AddWithValue("@now", DateTime.Now);
+                    command.ExecuteNonQuery();
+                }
                 catch { return Ok("User not found"); }
             }
-            return Ok("Ok");
+            return Ok("sup");
+        }
+
+        [Route("logout")]
+        public IActionResult Logout(int id)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlCommand command = new SqlCommand("INSERT sessionlog VALUES (@id, @now, 0)", connection);
+                command.Parameters.AddWithValue("@id", id);
+                command.Parameters.AddWithValue("@now", DateTime.Now);
+                try
+                {
+                    command.ExecuteNonQuery();
+                }
+                catch (Exception e) { return Ok(e.Message); }
+            }
+            return Ok("bye");
         }
 
         [Route("register")]
@@ -35,7 +59,7 @@ namespace MicroserviceFdrv.Controllers
                 try { int id = (int)command.ExecuteScalar(); }
                 catch { return Ok("User not found"); }
             }
-            return Ok("Ok");
+            return Ok("welcome");
         }
     }
 }

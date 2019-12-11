@@ -22,7 +22,7 @@ namespace MicroserviceFdrv.Controllers
                 try { command.ExecuteNonQuery(); }
                 catch (Exception e) { return Ok(e.Message); }
             }
-            return Ok("Ok");
+            return Ok("added");
         }
 
         [Route("editnote")]
@@ -38,7 +38,7 @@ namespace MicroserviceFdrv.Controllers
                 try { command.ExecuteNonQuery(); }
                 catch (Exception e) { return Ok(e.Message); }
             }
-            return Ok("Ok");
+            return Ok("submitted");
         }
 
         [Route("delnote")]
@@ -51,7 +51,7 @@ namespace MicroserviceFdrv.Controllers
                 try { command.ExecuteNonQuery(); }
                 catch (Exception e) { return Ok(e.Message); }
             }
-            return Ok("Ok");
+            return Ok("deleted");
         }
     }
 }
