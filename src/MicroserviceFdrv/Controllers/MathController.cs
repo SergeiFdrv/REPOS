@@ -18,6 +18,10 @@ namespace MicroserviceFdrv.Controllers
         public int Multiply(int x, int y) => x * y;
 
         [Route("api/math/div/{id?}")]
-        public int Divide(int x, int y) => x / y;
+        public int Divide(int x, int y)
+        {
+            if (y == 0) return 0;
+            return x / y;
+        }
     }
 }

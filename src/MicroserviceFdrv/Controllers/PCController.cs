@@ -37,7 +37,7 @@ namespace MicroserviceFdrv.Controllers
         }
 
         [Route("savepc")]
-        public IActionResult Dump(short model, short speed, short ram, short hd, string rd, int price)
+        public IActionResult Add(short model, short speed, short ram, short hd, string rd, int price)
         {
             try
             {
