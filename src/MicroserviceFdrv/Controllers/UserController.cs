@@ -9,12 +9,12 @@ namespace MicroserviceFdrv.Controllers
 {
     public class UserController : Controller
     {
-        private readonly string connectionString = @"Data Source=KONDR-244\MSSQLSERVER01; Initial Catalog=Computers; Integrated Security=true";
         [Route("login")]
         public IActionResult Login(string username, string passwd = "")
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(Startup.CS))
             {
+                connection.Open();
                 SqlCommand command = new SqlCommand("SELECT id FROM users WHERE username = @username AND passwd = @password", connection);
                 command.Parameters.AddWithValue("@username", username);
                 command.Parameters.AddWithValue("@password", passwd);
@@ -28,38 +28,37 @@ namespace MicroserviceFdrv.Controllers
                 }
                 catch { return Ok("User not found"); }
             }
-            return Ok("sup");
+            return Ok("sup, " + username);
         }
 
         [Route("logout")]
         public IActionResult Logout(int id)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(Startup.CS))
             {
+                connection.Open();
                 SqlCommand command = new SqlCommand("INSERT sessionlog VALUES (@id, @now, 0)", connection);
                 command.Parameters.AddWithValue("@id", id);
                 command.Parameters.AddWithValue("@now", DateTime.Now);
-                try
-                {
-                    command.ExecuteNonQuery();
-                }
+                try { command.ExecuteNonQuery(); }
                 catch (Exception e) { return Ok(e.Message); }
             }
-            return Ok("bye");
+            return Ok($"bye, user {id}");
         }
 
         [Route("register")]
         public IActionResult Register(string username, string passwd = "")
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(Startup.CS))
             {
+                connection.Open();
                 SqlCommand command = new SqlCommand("INSERT users VALUES (@name, @pwd)", connection);
                 command.Parameters.AddWithValue("@name", username);
                 command.Parameters.AddWithValue("@pwd", passwd);
-                try { int id = (int)command.ExecuteScalar(); }
-                catch { return Ok("User not found"); }
+                try { command.ExecuteNonQuery(); }
+                catch (Exception e) { return Ok(e.Message); }
             }
-            return Ok("welcome");
+            return Ok("welcome, " + username);
         }
     }
 }

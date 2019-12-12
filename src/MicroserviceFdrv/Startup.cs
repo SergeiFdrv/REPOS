@@ -14,10 +14,12 @@ namespace MicroserviceFdrv
     public class Startup
     {
         private IConfiguration _config;
+        public static string CS { get; private set; }
 
         public Startup(IConfiguration config)
         {
             _config = config;
+            CS = _config.GetValue<string>("ConnectionString");
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -45,7 +47,7 @@ namespace MicroserviceFdrv
                 );
                 endpoints.MapGet("/", async context =>
                 {
-                    await context.Response.WriteAsync(_config.GetValue<string>("ConnectionString"));
+                    await context.Response.WriteAsync(CS);
                 });
             });
         }

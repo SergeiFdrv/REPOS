@@ -9,7 +9,6 @@ namespace MicroserviceFdrv.Controllers
 {
     public class NoteController : Controller
     {
-        private readonly string connectionString = @"Data Source=KONDR-244\MSSQLSERVER01; Initial Catalog=Computers; Integrated Security=true";
         [Route("addnote")]
         public IActionResult Add(string title, string text)
         {
@@ -18,8 +17,9 @@ namespace MicroserviceFdrv.Controllers
                 return null;
             }
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(Startup.CS))
             {
+                connection.Open();
                 SqlCommand command = new SqlCommand("INSERT notes VALUES (@title, @text, @now)", connection);
                 command.Parameters.AddWithValue("@title", title);
                 command.Parameters.AddWithValue("@text", text);
@@ -27,36 +27,42 @@ namespace MicroserviceFdrv.Controllers
                 try { command.ExecuteNonQuery(); }
                 catch (Exception e) { return Ok(e.Message); }
             }
-            return Ok("added");
+            return Ok(title + " added");
         }
 
         [Route("editnote")]
         public IActionResult Edit(int id, string title, string text)
         {
-            if (title == null && text == null) return Ok("No changes ordered");
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            bool notitle = string.IsNullOrEmpty(title), notext = string.IsNullOrEmpty(text);
+            if (notitle && notext || id == 0)
             {
-                SqlCommand command = new SqlCommand("UPDATE TABLE notes SET " + title == null ? (text == null ? "" : "notetext = @text") : ("title = @title" + text == null ? "" : ", notetext = @text") + " WHERE id = @id", connection);
-                command.Parameters.AddWithValue("@title", title);
-                command.Parameters.AddWithValue("@text", text);
+                return Ok("Could not edit note");
+            }
+            using (SqlConnection connection = new SqlConnection(Startup.CS))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand("UPDATE notes SET " + (notitle ? (notext ? "" : "notetext = @text") : ("title = @title" + (notext ? "" : ", notetext = @text"))) + " WHERE id = @id", connection);
+                if (!notitle) command.Parameters.AddWithValue("@title", title);
+                if (!notext) command.Parameters.AddWithValue("@text", text);
                 command.Parameters.AddWithValue("@id", id);
                 try { command.ExecuteNonQuery(); }
                 catch (Exception e) { return Ok(e.Message); }
             }
-            return Ok("submitted");
+            return Ok($"note {id} changes submitted");
         }
 
         [Route("delnote")]
         public IActionResult Delete(int id)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(Startup.CS))
             {
+                connection.Open();
                 SqlCommand command = new SqlCommand("DELETE FROM notes WHERE id = @id", connection);
                 command.Parameters.AddWithValue("@id", id);
                 try { command.ExecuteNonQuery(); }
                 catch (Exception e) { return Ok(e.Message); }
             }
-            return Ok("deleted");
+            return Ok($"note {id} deleted");
         }
     }
 }
