@@ -11,8 +11,13 @@ namespace MicroserviceFdrv.Controllers
     {
         private readonly string connectionString = @"Data Source=KONDR-244\MSSQLSERVER01; Initial Catalog=Computers; Integrated Security=true";
         [Route("addnote")]
-        public IActionResult Add(string title = "", string text = "")
+        public IActionResult Add(string title, string text)
         {
+            if(string.IsNullOrEmpty(title) || string.IsNullOrEmpty(text))
+            {
+                return null;
+            }
+
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 SqlCommand command = new SqlCommand("INSERT notes VALUES (@title, @text, @now)", connection);
@@ -26,7 +31,7 @@ namespace MicroserviceFdrv.Controllers
         }
 
         [Route("editnote")]
-        public IActionResult Edit(int id, string title = null, string text = null)
+        public IActionResult Edit(int id, string title, string text)
         {
             if (title == null && text == null) return Ok("No changes ordered");
             using (SqlConnection connection = new SqlConnection(connectionString))
