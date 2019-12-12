@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Xunit;
 using Microsoft.AspNetCore.Mvc;
 using MicroserviceFdrv.Controllers;
@@ -7,11 +8,19 @@ namespace MicroserviceFdrv.Tests
 {
     public class UserControllerUnitTest
     {
+        private UserController controller;
+        //private SqlConnection _connection = null;
+
+        public UserControllerUnitTest()
+        {
+            controller = new UserController();
+            controller.ConnectionString = @"Data Source=KONDR-244\MSSQLSERVER01; Initial Catalog=Konspekt; Integrated Security=true";
+        }
+
         [Fact]
         public void Register()
         {
             // Arrange
-            UserController controller = new UserController();
             string username = "user";
 
             // Act
@@ -25,7 +34,6 @@ namespace MicroserviceFdrv.Tests
         public void RegisterWithPassword()
         {
             // Arrange
-            UserController controller = new UserController();
             string username = "user0", password = "asd";
 
             // Act
@@ -39,7 +47,6 @@ namespace MicroserviceFdrv.Tests
         public void Login()
         {
             // Arrange
-            UserController controller = new UserController();
             string username = "user";
 
             // Act
@@ -53,7 +60,6 @@ namespace MicroserviceFdrv.Tests
         public void LoginPassword()
         {
             // Arrange
-            UserController controller = new UserController();
             string username = "user0", password = "asd";
 
             // Act
@@ -67,7 +73,6 @@ namespace MicroserviceFdrv.Tests
         public void LoginWrong()
         {
             // Arrange
-            UserController controller = new UserController();
             string username = "user0", password = "a";
 
             // Act
@@ -81,7 +86,6 @@ namespace MicroserviceFdrv.Tests
         public void Logout()
         {
             // Arrange
-            UserController controller = new UserController();
             int id = 1;
 
             // Act

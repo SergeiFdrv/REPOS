@@ -9,12 +9,18 @@ namespace MicroserviceFdrv.Controllers
 {
     public class PCController : Controller
     {
-        private readonly string connectionString = @"Data Source=KONDR-244\MSSQLSERVER01; Initial Catalog=Computers; Integrated Security=true";
+        public string ConnectionString { get; set; }
+
+        public PCController()
+        {
+            ConnectionString = string.Empty;//TODO: добавить строку подлюкчения из appsetting
+        }
+
         [Route("getpc")]
         public IActionResult Get()
         {
             List<PC> PCs = new List<PC>();
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
                 SqlCommand command = new SqlCommand("SELECT * FROM pc", connection);
@@ -41,7 +47,7 @@ namespace MicroserviceFdrv.Controllers
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
                     connection.Open();
                     SqlCommand command = new SqlCommand("INSERT pc VALUES (@model, @speed, @ram, @hd, @rd, @price)", connection);

@@ -9,6 +9,13 @@ namespace MicroserviceFdrv.Controllers
 {
     public class UserController : Controller
     {
+        public string ConnectionString { get; set; }
+
+        public UserController()
+        {
+            ConnectionString = string.Empty;//TODO: добавить строку подлюкчения из appsetting
+        }
+
         [Route("login")]
         public IActionResult Login(string username, string passwd = "")
         {
